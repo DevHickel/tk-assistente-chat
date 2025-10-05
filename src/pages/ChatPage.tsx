@@ -104,7 +104,7 @@ export default function ChatPage() {
             <Bot className="w-6 h-6 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-semibold text-foreground">
-            Assistente de Procedimentos TK Solutions
+            Assistente de Procedimentos TK Solution
           </h1>
         </div>
       </header>
@@ -118,7 +118,7 @@ export default function ChatPage() {
                 <Bot className="w-8 h-8 text-primary" />
               </div>
               <h2 className="text-2xl font-semibold mb-2 text-foreground">
-                Bem-vindo ao Assistente TK Solutions
+                Bem-vindo ao Assistente TK Solution
               </h2>
               <p className="text-muted-foreground max-w-md">
                 Faça perguntas sobre procedimentos e receba respostas detalhadas instantaneamente.

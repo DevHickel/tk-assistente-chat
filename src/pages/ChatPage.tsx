@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageBubble } from '@/components/MessageBubble';
 import { TypingIndicator } from '@/components/TypingIndicator';
 import { ChatInput } from '@/components/ChatInput';
-import { Bot } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import tkLogo from '@/assets/tk-logo.png';
 
 interface Message {
   id: string;
@@ -99,13 +100,18 @@ export default function ChatPage() {
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-            <Bot className="w-6 h-6 text-primary-foreground" />
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <img 
+              src={tkLogo} 
+              alt="TK Solution Logo" 
+              className="w-10 h-10 rounded-full object-contain bg-black p-1"
+            />
+            <h1 className="text-xl font-semibold text-foreground">
+              Assistente de Procedimentos TK Solution
+            </h1>
           </div>
-          <h1 className="text-xl font-semibold text-foreground">
-            Assistente de Procedimentos TK Solution
-          </h1>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -114,8 +120,12 @@ export default function ChatPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <Bot className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 rounded-full bg-black p-2 mb-4">
+                <img 
+                  src={tkLogo} 
+                  alt="TK Solution Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <h2 className="text-2xl font-semibold mb-2 text-foreground">
                 Bem-vindo ao Assistente TK Solution

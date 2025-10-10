@@ -120,7 +120,7 @@ export default function ChatPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-black p-2 mb-4">
+              <div className="w-20 h-20 rounded-full bg-black p-3 mb-4 flex items-center justify-center">
                 <img 
                   src={tkLogo} 
                   alt="TK Solution Logo" 

@@ -20,21 +20,36 @@ serve(async (req) => {
       );
     }
 
-    // URL encode the message
-    const encodedMessage = encodeURIComponent(message);
-    
     // N8N webhook endpoint
     const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook-test/TkSolution';
     
-    // Make GET request to N8N
-    const response = await fetch(`${N8N_WEBHOOK}?message=${encodedMessage}`);
+    console.log('Calling N8N webhook with message:', message);
+    
+    // Try POST request first (most common for N8N webhooks)
+    let response = await fetch(N8N_WEBHOOK, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }),
+    });
+    
+    // If POST fails with 404, try GET with query parameter
+    if (!response.ok && response.status === 404) {
+      console.log('POST failed with 404, trying GET method');
+      const encodedMessage = encodeURIComponent(message);
+      response = await fetch(`${N8N_WEBHOOK}?message=${encodedMessage}`);
+    }
     
     if (!response.ok) {
-      throw new Error(`N8N webhook returned status ${response.status}`);
+      const errorText = await response.text();
+      console.error(`N8N webhook error (${response.status}):`, errorText);
+      throw new Error(`N8N webhook returned status ${response.status}: ${errorText}`);
     }
 
     // Parse the response
     const assistantResponse = await response.text();
+    console.log('N8N response received:', assistantResponse.substring(0, 100));
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),

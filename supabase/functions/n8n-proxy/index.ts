@@ -40,23 +40,33 @@ serve(async (req) => {
       throw new Error(`N8N webhook returned status ${response.status}: ${errorText}`);
     }
 
-    // Parse the response - try JSON first, then text
-    let assistantResponse: string;
-    const contentType = response.headers.get('content-type');
+    // First, get the raw response as text
+    const rawResponse = await response.text();
+    console.log('N8N raw response:', rawResponse);
+    console.log('N8N response length:', rawResponse.length);
     
-    if (contentType?.includes('application/json')) {
-      const jsonData = await response.json();
+    if (!rawResponse || rawResponse.trim() === '') {
+      console.error('N8N returned empty response');
+      throw new Error('N8N retornou uma resposta vazia. Verifique se o workflow está ativo no N8N.');
+    }
+
+    // Try to parse as JSON, fallback to raw text
+    let assistantResponse: string;
+    try {
+      const jsonData = JSON.parse(rawResponse);
       console.log('N8N JSON response:', jsonData);
       // Extract the response from various possible JSON structures
-      assistantResponse = jsonData.response || jsonData.message || jsonData.text || JSON.stringify(jsonData);
-    } else {
-      assistantResponse = await response.text();
-      console.log('N8N text response:', assistantResponse.substring(0, 100));
+      assistantResponse = jsonData.response || jsonData.message || jsonData.text || jsonData.output || JSON.stringify(jsonData);
+    } catch (parseError) {
+      console.log('N8N response is not JSON, using as text');
+      assistantResponse = rawResponse;
     }
     
     if (!assistantResponse || assistantResponse.trim() === '') {
-      throw new Error('N8N returned empty response');
+      throw new Error('N8N retornou uma resposta vazia ou inválida');
     }
+    
+    console.log('Final assistant response:', assistantResponse.substring(0, 200));
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),

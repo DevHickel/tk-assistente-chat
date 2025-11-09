@@ -182,21 +182,14 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      // URL encode the user's message
-      const encodedMessage = encodeURIComponent(content);
-      
-      // N8N webhook endpoint
-      const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook-test/TkSolution';
-      
-      // Make GET request to N8N
-      const response = await fetch(`${N8N_WEBHOOK}?message=${encodedMessage}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get response from N8N');
-      }
+      // Call N8N through edge function
+      const { data, error } = await supabase.functions.invoke('n8n-proxy', {
+        body: { message: content }
+      });
 
-      // Parse the plain text response
-      const assistantResponse = await response.text();
+      if (error) throw error;
+      
+      const assistantResponse = data.response;
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

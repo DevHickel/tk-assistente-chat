@@ -104,6 +104,25 @@ export default function Chat() {
     }
   };
 
+  const updateSessionTitle = async (sessionId: string, firstMessage: string) => {
+    // Generate a title from the first message (first 50 chars or until first sentence end)
+    let title = firstMessage.trim();
+    const sentenceEnd = title.match(/[.!?]/);
+    if (sentenceEnd && sentenceEnd.index) {
+      title = title.substring(0, sentenceEnd.index + 1);
+    }
+    if (title.length > 50) {
+      title = title.substring(0, 50) + '...';
+    }
+
+    await supabase
+      .from('chat_sessions')
+      .update({ title })
+      .eq('id', sessionId);
+    
+    await loadSessions();
+  };
+
   const saveMessage = async (content: string, role: 'user' | 'assistant') => {
     if (!currentSession) return;
 
@@ -129,83 +148,40 @@ export default function Chat() {
 
     setMessages((prev) => [...prev, userMessage]);
     await saveMessage(content, 'user');
+    
+    // Update session title if this is the first message
+    if (messages.length === 0) {
+      await updateSessionTitle(currentSession, content);
+    }
+    
     setIsLoading(true);
 
     try {
-      const conversationMessages = [...messages, userMessage].map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-      }));
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            messages: conversationMessages,
-            sessionId: currentSession,
-          }),
-        }
-      );
-
-      if (!response.ok || !response.body) {
-        throw new Error('Failed to get response');
+      // URL encode the user's message
+      const encodedMessage = encodeURIComponent(content);
+      
+      // N8N webhook endpoint
+      const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook-test/TkSolution';
+      
+      // Make GET request to N8N
+      const response = await fetch(`${N8N_WEBHOOK}?message=${encodedMessage}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get response from N8N');
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantContent = '';
+      // Parse the plain text response
+      const assistantResponse = await response.text();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: assistantResponse,
+        role: 'assistant',
+        timestamp: new Date(),
+      };
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (!line.trim() || line.startsWith(':')) continue;
-          if (!line.startsWith('data: ')) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') continue;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            
-            if (content) {
-              assistantContent += content;
-              
-              setMessages((prev) => {
-                const last = prev[prev.length - 1];
-                if (last?.role === 'assistant') {
-                  return prev.map((m, i) =>
-                    i === prev.length - 1 ? { ...m, content: assistantContent } : m
-                  );
-                }
-                return [
-                  ...prev,
-                  {
-                    id: (Date.now() + 1).toString(),
-                    content: assistantContent,
-                    role: 'assistant',
-                    timestamp: new Date(),
-                  },
-                ];
-              });
-            }
-          } catch (e) {
-            // Ignore parse errors for incomplete chunks
-          }
-        }
-      }
-
-      await saveMessage(assistantContent, 'assistant');
+      setMessages((prev) => [...prev, assistantMessage]);
+      await saveMessage(assistantResponse, 'assistant');
     } catch (error) {
       console.error('Error sending message:', error);
       toast({

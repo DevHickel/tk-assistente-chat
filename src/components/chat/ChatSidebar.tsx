@@ -82,10 +82,10 @@ export const ChatSidebar = ({
                       e.stopPropagation();
                       onDeleteSession(session.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 shrink-0 p-1 hover:bg-destructive/20 rounded transition-opacity"
+                    className="shrink-0 p-1.5 hover:bg-destructive/20 rounded transition-colors opacity-100"
                     title="Excluir conversa"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </button>
                 </div>
               ))}

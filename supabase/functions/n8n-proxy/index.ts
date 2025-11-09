@@ -20,8 +20,8 @@ serve(async (req) => {
       );
     }
 
-    // N8N webhook endpoint (production)
-    const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook/TkSolution';
+    // N8N webhook endpoint (test)
+    const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook-test/TkSolution';
     
     console.log('Calling N8N webhook with message:', message);
     
@@ -40,9 +40,23 @@ serve(async (req) => {
       throw new Error(`N8N webhook returned status ${response.status}: ${errorText}`);
     }
 
-    // Parse the response
-    const assistantResponse = await response.text();
-    console.log('N8N response received:', assistantResponse.substring(0, 100));
+    // Parse the response - try JSON first, then text
+    let assistantResponse: string;
+    const contentType = response.headers.get('content-type');
+    
+    if (contentType?.includes('application/json')) {
+      const jsonData = await response.json();
+      console.log('N8N JSON response:', jsonData);
+      // Extract the response from various possible JSON structures
+      assistantResponse = jsonData.response || jsonData.message || jsonData.text || JSON.stringify(jsonData);
+    } else {
+      assistantResponse = await response.text();
+      console.log('N8N text response:', assistantResponse.substring(0, 100));
+    }
+    
+    if (!assistantResponse || assistantResponse.trim() === '') {
+      throw new Error('N8N returned empty response');
+    }
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),

@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Copy, Check } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface MessageBubbleProps {
   content: string;
@@ -7,22 +11,44 @@ interface MessageBubbleProps {
 }
 
 export const MessageBubble = ({ content, variant }: MessageBubbleProps) => {
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(true);
+      toast({
+        title: 'Copiado!',
+        description: 'Texto copiado para a área de transferência.',
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Falha ao copiar o texto.',
+      });
+    }
+  };
+
   return (
     <div
       className={cn(
-        'mb-4 animate-fade-in',
+        'mb-4 animate-fade-in group',
         variant === 'user' ? 'flex justify-end' : 'flex justify-start'
       )}
     >
-      <div
-        className={cn(
-          'max-w-[85%] rounded-2xl px-4 py-3 shadow-sm prose prose-sm max-w-none',
-          variant === 'user'
-            ? 'bg-[hsl(var(--chat-user-bg))] text-white prose-invert'
-            : 'bg-[hsl(var(--chat-assistant-bg))] border border-[hsl(var(--chat-assistant-border))] dark:prose-invert dark:text-white text-gray-900'
-        )}
-      >
-        <ReactMarkdown
+      <div className="relative">
+        <div
+          className={cn(
+            'max-w-[85%] rounded-2xl px-4 py-3 shadow-sm prose prose-sm max-w-none',
+            variant === 'user'
+              ? 'bg-[hsl(var(--chat-user-bg))] text-white prose-invert'
+              : 'bg-[hsl(var(--chat-assistant-bg))] border border-[hsl(var(--chat-assistant-border))] dark:prose-invert dark:text-white text-gray-900'
+          )}
+        >
+          <ReactMarkdown
           components={{
             p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
             ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
@@ -49,7 +75,23 @@ export const MessageBubble = ({ content, variant }: MessageBubbleProps) => {
           }}
         >
           {content}
-        </ReactMarkdown>
+          </ReactMarkdown>
+        </div>
+        
+        {variant === 'assistant' && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCopy}
+            className="absolute -top-2 -right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity bg-background border border-border shadow-sm"
+          >
+            {copied ? (
+              <Check className="h-3 w-3 text-green-500" />
+            ) : (
+              <Copy className="h-3 w-3" />
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );

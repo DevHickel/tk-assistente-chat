@@ -1,4 +1,4 @@
-import { Plus, MessageSquare, Menu, X } from 'lucide-react';
+import { Plus, MessageSquare, Menu, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,7 @@ interface ChatSidebarProps {
   currentSession: string | null;
   onSelectSession: (id: string) => void;
   onNewChat: () => void;
+  onDeleteSession: (id: string) => void;
   isOpen: boolean;
   onToggle: () => void;
 }
@@ -17,6 +18,7 @@ export const ChatSidebar = ({
   currentSession,
   onSelectSession,
   onNewChat,
+  onDeleteSession,
   isOpen,
   onToggle,
 }: ChatSidebarProps) => {
@@ -56,22 +58,36 @@ export const ChatSidebar = ({
           <ScrollArea className="flex-1">
             <div className="p-2 space-y-1">
               {sessions.map((session) => (
-                <button
+                <div
                   key={session.id}
-                  onClick={() => {
-                    onSelectSession(session.id);
-                    if (window.innerWidth < 1024) onToggle();
-                  }}
                   className={cn(
-                    'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+                    'group relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
                     currentSession === session.id
                       ? 'bg-primary text-primary-foreground'
                       : 'hover:bg-accent text-foreground'
                   )}
                 >
-                  <MessageSquare className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{session.title}</span>
-                </button>
+                  <button
+                    onClick={() => {
+                      onSelectSession(session.id);
+                      if (window.innerWidth < 1024) onToggle();
+                    }}
+                    className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                  >
+                    <MessageSquare className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{session.title}</span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteSession(session.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 shrink-0 p-1 hover:bg-destructive/20 rounded transition-opacity"
+                    title="Excluir conversa"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               ))}
             </div>
           </ScrollArea>

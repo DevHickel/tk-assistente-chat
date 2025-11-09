@@ -104,6 +104,31 @@ export default function Chat() {
     }
   };
 
+  const deleteSession = async (sessionId: string) => {
+    const { error } = await supabase
+      .from('chat_sessions')
+      .delete()
+      .eq('id', sessionId);
+
+    if (!error) {
+      if (currentSession === sessionId) {
+        setCurrentSession(null);
+        setMessages([]);
+      }
+      await loadSessions();
+      toast({
+        title: 'Conversa excluída',
+        description: 'A conversa foi removida com sucesso.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Não foi possível excluir a conversa.',
+      });
+    }
+  };
+
   const updateSessionTitle = async (sessionId: string, firstMessage: string) => {
     // Generate a title from the first message (first 50 chars or until first sentence end)
     let title = firstMessage.trim();
@@ -209,6 +234,7 @@ export default function Chat() {
         currentSession={currentSession}
         onSelectSession={setCurrentSession}
         onNewChat={createNewSession}
+        onDeleteSession={deleteSession}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />

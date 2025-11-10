@@ -103,7 +103,9 @@ export default function Chat() {
       setCurrentSession(data.id);
       setMessages([]);
       await loadSessions();
+      return data.id;
     }
+    return null;
   };
 
   const deleteSession = async (sessionId: string) => {
@@ -187,9 +189,20 @@ export default function Chat() {
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!currentSession) {
-      await createNewSession();
-      return;
+    let sessionId = currentSession;
+    
+    // Se não há sessão, cria uma nova e usa o ID retornado
+    if (!sessionId) {
+      const newSessionId = await createNewSession();
+      if (!newSessionId) {
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: 'Não foi possível criar uma nova conversa.',
+        });
+        return;
+      }
+      sessionId = newSessionId;
     }
 
     const userMessage: Message = {
@@ -200,11 +213,17 @@ export default function Chat() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    await saveMessage(content, 'user');
+    
+    // Salva a mensagem com o sessionId correto
+    await supabase.from('chat_messages').insert({
+      session_id: sessionId,
+      role: 'user',
+      content,
+    });
     
     // Update session title if this is the first message
     if (messages.length === 0) {
-      await updateSessionTitle(currentSession, content);
+      await updateSessionTitle(sessionId, content);
     }
     
     setIsLoading(true);
@@ -227,7 +246,13 @@ export default function Chat() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-      await saveMessage(assistantResponse, 'assistant');
+      
+      // Salva a resposta do assistente
+      await supabase.from('chat_messages').insert({
+        session_id: sessionId,
+        role: 'assistant',
+        content: assistantResponse,
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       toast({

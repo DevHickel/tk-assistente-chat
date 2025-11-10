@@ -52,9 +52,7 @@ export const ChatHeader = () => {
             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0"
           />
           <h1 className="text-sm sm:text-lg md:text-xl font-semibold text-foreground truncate">
-            <span className="hidden md:inline">Assistente de Procedimentos TK Solution</span>
-            <span className="hidden sm:inline md:hidden">TK Solution</span>
-            <span className="sm:hidden">TK</span>
+            Tkzinho
           </h1>
         </div>
         

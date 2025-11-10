@@ -8,9 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import tkLogo from '@/assets/tk-logo-new.webp';
 
-export default function Auth() {
+export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, user } = useAuth();
+  const { signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -20,22 +20,29 @@ export default function Auth() {
     return null;
   }
 
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const fullName = formData.get('fullName') as string;
 
-    const { error } = await signIn(email, password);
+    const { error } = await signUp(email, password, fullName);
 
     if (error) {
       toast({
         variant: 'destructive',
-        title: 'Erro ao fazer login',
+        title: 'Erro ao criar conta',
         description: error.message,
       });
+    } else {
+      toast({
+        title: 'Conta criada com sucesso!',
+        description: 'Você já pode acessar o sistema.',
+      });
+      navigate('/chat');
     }
 
     setIsLoading(false);
@@ -50,13 +57,24 @@ export default function Auth() {
               <img src={tkLogo} alt="TK Solution Logo" className="w-full h-full object-cover rounded-full" />
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Entrar</CardTitle>
+          <CardTitle className="text-2xl text-center">Criar Conta</CardTitle>
           <CardDescription className="text-center">
-            Entre com sua conta do Assistente TK Solution
+            Crie sua conta para acessar o Assistente TK Solution
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignIn} className="space-y-4">
+          <form onSubmit={handleSignUp} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nome Completo</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                placeholder="Seu Nome"
+                required
+                disabled={isLoading}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -76,17 +94,18 @@ export default function Auth() {
                 type="password"
                 placeholder="••••••••"
                 required
+                minLength={6}
                 disabled={isLoading}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Entrando...' : 'Entrar'}
+              {isLoading ? 'Criando conta...' : 'Cadastrar'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            Não tem uma conta?{' '}
-            <Link to="/signup" className="text-primary hover:underline">
-              Cadastre-se
+            Já tem uma conta?{' '}
+            <Link to="/auth" className="text-primary hover:underline">
+              Faça login
             </Link>
           </div>
         </CardContent>

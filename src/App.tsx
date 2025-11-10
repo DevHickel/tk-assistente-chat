@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Signup from "./pages/Signup";
 import Chat from "./pages/Chat";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
@@ -25,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/signup" element={<Signup />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/settings" element={<Settings />} />

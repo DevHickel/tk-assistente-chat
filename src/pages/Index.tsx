@@ -1,6 +1,38 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import tkLogo from '@/assets/tk-logo-new.webp';
 
 export default function Index() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to chat if user is already logged in
+    if (!loading) {
+      if (user) {
+        navigate('/chat');
+      } else {
+        navigate('/auth');
+      }
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <img 
+            src={tkLogo}
+            alt="TK Solution Logo" 
+            className="w-16 h-16 mx-auto mb-4 rounded-full object-cover animate-pulse"
+          />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-8">
       <div className="text-center max-w-2xl">

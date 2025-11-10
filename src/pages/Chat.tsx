@@ -229,8 +229,8 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      // Call N8N through edge function
-      const { data, error } = await supabase.functions.invoke('n8n-proxy', {
+      // Call Lovable AI through edge function
+      const { data, error } = await supabase.functions.invoke('chat-ai', {
         body: { message: content }
       });
 

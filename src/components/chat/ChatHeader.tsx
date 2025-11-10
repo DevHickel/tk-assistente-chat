@@ -19,28 +19,30 @@ export const ChatHeader = () => {
 
   return (
     <header className="border-b border-border bg-card shadow-sm">
-      <div className="px-4 py-4 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <div className="px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <SidebarTrigger />
           <img
             src={tkLogo}
             alt="TK Solution Logo"
-            className="w-10 h-10 rounded-full object-contain bg-black p-1"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-contain bg-black p-1 shrink-0"
           />
-          <h1 className="text-xl font-semibold text-foreground">
-            Assistente de Procedimentos TK Solution
+          <h1 className="text-sm sm:text-lg md:text-xl font-semibold text-foreground truncate">
+            <span className="hidden md:inline">Assistente de Procedimentos TK Solution</span>
+            <span className="hidden sm:inline md:hidden">TK Solution</span>
+            <span className="sm:hidden">TK</span>
           </h1>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <ThemeToggle />
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Avatar className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                   <AvatarImage src="" />
-                  <AvatarFallback>
+                  <AvatarFallback className="text-xs sm:text-sm">
                     {user?.email?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>

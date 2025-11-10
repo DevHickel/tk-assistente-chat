@@ -3,7 +3,7 @@ import { MessageBubble } from '@/components/MessageBubble';
 import { TypingIndicator } from '@/components/TypingIndicator';
 import { ChatInput } from '@/components/ChatInput';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import tkLogo from '@/assets/tk-logo.png';
+import tkLogo from '@/assets/tk-logo-new.webp';
 
 interface Message {
   id: string;
@@ -105,7 +105,7 @@ export default function ChatPage() {
             <img 
               src={tkLogo} 
               alt="TK Solution Logo" 
-              className="w-10 h-10 rounded-full object-contain bg-black p-1"
+              className="w-10 h-10 rounded-full object-cover"
             />
             <h1 className="text-xl font-semibold text-foreground">
               Assistente de Procedimentos TK Solution
@@ -120,11 +120,11 @@ export default function ChatPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-20 h-20 rounded-full bg-black p-3 mb-4 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full mb-4 flex items-center justify-center">
                 <img 
                   src={tkLogo} 
                   alt="TK Solution Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
               <h2 className="text-2xl font-semibold mb-2 text-foreground">

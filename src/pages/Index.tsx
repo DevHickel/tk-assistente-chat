@@ -1,12 +1,14 @@
+import tkLogo from '@/assets/tk-logo-new.webp';
+
 export default function Index() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-8">
       <div className="text-center max-w-2xl">
-        <div className="w-24 h-24 rounded-full bg-black p-4 mx-auto mb-6 flex items-center justify-center">
+        <div className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center">
           <img 
-            src="/src/assets/tk-logo.png" 
+            src={tkLogo}
             alt="TK Solution Logo" 
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover rounded-full"
           />
         </div>
         <h1 className="text-4xl font-bold mb-4 text-foreground">

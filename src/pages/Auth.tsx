@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import tkLogo from '@/assets/tk-logo.png';
+import tkLogo from '@/assets/tk-logo-new.webp';
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -85,8 +85,8 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
           <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-black p-2 flex items-center justify-center">
-              <img src={tkLogo} alt="TK Solution Logo" className="w-full h-full object-contain" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center">
+              <img src={tkLogo} alt="TK Solution Logo" className="w-full h-full object-cover rounded-full" />
             </div>
           </div>
           <CardTitle className="text-2xl text-center">Assistente TK Solution</CardTitle>

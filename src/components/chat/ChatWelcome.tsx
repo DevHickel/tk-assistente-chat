@@ -1,4 +1,4 @@
-import tkLogo from '@/assets/tk-logo.png';
+import tkLogo from '@/assets/tk-logo-new.webp';
 import { Button } from '@/components/ui/button';
 
 interface ChatWelcomeProps {
@@ -15,11 +15,11 @@ const suggestions = [
 export const ChatWelcome = ({ onSuggestionClick }: ChatWelcomeProps) => {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center py-12">
-      <div className="w-20 h-20 rounded-full bg-black p-3 mb-4 flex items-center justify-center">
+      <div className="w-20 h-20 rounded-full mb-4 flex items-center justify-center">
         <img
           src={tkLogo}
           alt="TK Solution Logo"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover rounded-full"
         />
       </div>
       <h2 className="text-2xl font-semibold mb-2 text-foreground">

@@ -21,6 +21,7 @@ interface ChatSession {
   id: string;
   title: string;
   created_at: string;
+  pinned: boolean;
 }
 
 export default function Chat() {
@@ -64,6 +65,7 @@ export default function Chat() {
     const { data, error } = await supabase
       .from('chat_sessions')
       .select('*')
+      .order('pinned', { ascending: false })
       .order('updated_at', { ascending: false });
 
     if (!error && data) {
@@ -125,6 +127,32 @@ export default function Chat() {
         variant: 'destructive',
         title: 'Erro',
         description: 'Não foi possível excluir a conversa.',
+      });
+    }
+  };
+
+  const togglePinSession = async (sessionId: string) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (!session) return;
+
+    const { error } = await supabase
+      .from('chat_sessions')
+      .update({ pinned: !session.pinned })
+      .eq('id', sessionId);
+
+    if (!error) {
+      await loadSessions();
+      toast({
+        title: session.pinned ? 'Conversa desafixada' : 'Conversa fixada',
+        description: session.pinned 
+          ? 'A conversa foi desafixada com sucesso.'
+          : 'A conversa foi fixada no topo.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Não foi possível fixar a conversa.',
       });
     }
   };
@@ -229,6 +257,7 @@ export default function Chat() {
           onSelectSession={setCurrentSession}
           onNewChat={createNewSession}
           onDeleteSession={deleteSession}
+          onTogglePinSession={togglePinSession}
         />
 
         <div className="flex flex-col flex-1">

@@ -21,11 +21,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface ChatSidebarProps {
-  sessions: Array<{ id: string; title: string; created_at: string }>;
+  sessions: Array<{ id: string; title: string; created_at: string; pinned: boolean }>;
   currentSession: string | null;
   onSelectSession: (id: string) => void;
   onNewChat: () => void;
   onDeleteSession: (id: string) => void;
+  onTogglePinSession: (id: string) => void;
 }
 
 export const ChatSidebar = ({
@@ -34,6 +35,7 @@ export const ChatSidebar = ({
   onSelectSession,
   onNewChat,
   onDeleteSession,
+  onTogglePinSession,
 }: ChatSidebarProps) => {
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
@@ -67,7 +69,13 @@ export const ChatSidebar = ({
                         tooltip={isCollapsed ? session.title : undefined}
                         className="flex-1 pr-1"
                       >
-                        <MessageSquare className="h-4 w-4 shrink-0" />
+                        {session.pinned && (
+                          <Pin className="h-3 w-3 shrink-0 fill-current" />
+                        )}
+                        <MessageSquare className={cn(
+                          'h-4 w-4 shrink-0',
+                          session.pinned && !isCollapsed && 'ml-1'
+                        )} />
                         {!isCollapsed && (
                           <span className="flex-1 truncate text-left ml-2">
                             {session.title}
@@ -87,16 +95,15 @@ export const ChatSidebar = ({
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48 bg-popover">
+                          <DropdownMenuContent align="end" className="w-48 bg-popover z-50">
                             <DropdownMenuItem
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // TODO: Implement pin functionality
-                                console.log('Pin chat:', session.id);
+                                onTogglePinSession(session.id);
                               }}
                             >
                               <Pin className="h-4 w-4 mr-2" />
-                              Fixar conversa
+                              {session.pinned ? 'Desafixar' : 'Fixar conversa'}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={(e) => {

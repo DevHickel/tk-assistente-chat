@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import tkLogo from '@/assets/tk-logo.png';
+import tkLogo from '@/assets/tk-logo.webp';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,7 @@ export const ChatHeader = () => {
           <img
             src={tkLogo}
             alt="TK Solution Logo"
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-contain bg-black p-1 shrink-0"
+            className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0"
           />
           <h1 className="text-sm sm:text-lg md:text-xl font-semibold text-foreground truncate">
             <span className="hidden md:inline">Assistente de Procedimentos TK Solution</span>

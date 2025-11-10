@@ -49,7 +49,7 @@ export const ChatHeader = () => {
           <img
             src={tkLogo}
             alt="TK Solution Logo"
-            className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 bg-white p-1"
           />
           <h1 className="text-sm sm:text-lg md:text-xl font-semibold text-foreground truncate">
             <span className="hidden md:inline">Assistente de Procedimentos TK Solution</span>

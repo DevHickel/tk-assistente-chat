@@ -47,7 +47,7 @@ serve(async (req) => {
     
     if (!rawResponse || rawResponse.trim() === '') {
       console.error('N8N returned empty response');
-      throw new Error('N8N retornou resposta vazia. Verifique: 1) Se o workflow tem um nó "Respond to Webhook" configurado, 2) Se o workflow está em modo de produção (publicado), 3) Se o webhook está ativo');
+      throw new Error('N8N retornou resposta vazia. Verifique no N8N (https://n8n.vetorix.com.br): 1) Workflow está ATIVO/PUBLICADO (não em teste), 2) Tem nó "Respond to Webhook" configurado, 3) Webhook está ativo');
     }
 
     // Try to parse as JSON, fallback to raw text

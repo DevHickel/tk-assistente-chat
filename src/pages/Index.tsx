@@ -2,33 +2,24 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import tkLogo from '@/assets/tk-logo-new.webp';
+import { Button } from '@/components/ui/button';
 
 export default function Index() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to chat if user is already logged in
-    if (!loading) {
-      if (user) {
-        navigate('/chat');
-      } else {
-        navigate('/auth');
-      }
+    // If user is logged in, redirect to chat
+    if (!loading && user) {
+      navigate('/chat');
     }
   }, [user, loading, navigate]);
 
+  // Show loading while checking auth status
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <img 
-            src={tkLogo}
-            alt="TK Solution Logo" 
-            className="w-16 h-16 mx-auto mb-4 rounded-full object-cover animate-pulse"
-          />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
+        <div className="text-muted-foreground">Carregando...</div>
       </div>
     );
   }
@@ -50,12 +41,13 @@ export default function Index() {
           Seu assistente inteligente para consultar procedimentos e políticas da empresa
         </p>
         <div className="flex gap-4 justify-center">
-          <a
-            href="/auth"
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-8 py-2"
+          <Button
+            onClick={() => navigate('/auth')}
+            size="lg"
+            className="px-8"
           >
             Começar
-          </a>
+          </Button>
         </div>
       </div>
     </div>

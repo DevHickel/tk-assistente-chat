@@ -37,58 +37,34 @@ export const AdminUsers = () => {
   const loadUsers = async () => {
     setLoading(true);
     
-    const { data: profiles, error: profilesError } = await supabase
+    const { data: profiles, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, email, full_name, role')
       .order('email');
 
-    if (profilesError || !profiles) {
+    if (error || !profiles) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Falha ao carregar usuários.',
+      });
       setLoading(false);
       return;
     }
 
-    const usersWithRoles = await Promise.all(
-      profiles.map(async (profile) => {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', profile.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-
-        return {
-          id: profile.id,
-          email: profile.email,
-          full_name: profile.full_name,
-          role: roleData ? 'admin' : 'user',
-        } as UserProfile;
-      })
-    );
-
-    setUsers(usersWithRoles);
+    setUsers(profiles as UserProfile[]);
     setLoading(false);
   };
 
   const handleRoleChange = async (userId: string, newRole: 'user' | 'admin') => {
     try {
-      if (newRole === 'admin') {
-        // Add admin role
-        const { error } = await supabase.from('user_roles').insert({
-          user_id: userId,
-          role: 'admin',
-        });
+      // Update role in profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
 
-        if (error) throw error;
-      } else {
-        // Remove admin role
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId)
-          .eq('role', 'admin');
-
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       toast({
         title: 'Sucesso',

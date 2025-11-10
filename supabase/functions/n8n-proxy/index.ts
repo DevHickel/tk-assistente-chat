@@ -58,11 +58,26 @@ serve(async (req) => {
       console.log('N8N JSON response:', jsonData);
       // Extract the response from various possible JSON structures
       assistantResponse = jsonData.response || jsonData.message || jsonData.text || jsonData.output || JSON.stringify(jsonData);
-      // Extract image URL if present
+      // Extract image URL if present in various fields
       imageUrl = jsonData.image_url || jsonData.imageUrl || jsonData.image || null;
+      
+      // Try to extract image URL from markdown syntax in the response
+      if (!imageUrl && assistantResponse) {
+        const markdownImageMatch = assistantResponse.match(/!\[.*?\]\((https?:\/\/[^\)]+)\)/);
+        if (markdownImageMatch) {
+          imageUrl = markdownImageMatch[1];
+          console.log('Extracted image URL from markdown:', imageUrl);
+        }
+      }
     } catch (parseError) {
       console.log('N8N response is not JSON, using as text');
       assistantResponse = rawResponse;
+      // Try to extract image URL from markdown even in raw text
+      const markdownImageMatch = rawResponse.match(/!\[.*?\]\((https?:\/\/[^\)]+)\)/);
+      if (markdownImageMatch) {
+        imageUrl = markdownImageMatch[1];
+        console.log('Extracted image URL from raw markdown:', imageUrl);
+      }
     }
     
     if (!assistantResponse || assistantResponse.trim() === '') {

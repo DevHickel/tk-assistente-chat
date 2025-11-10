@@ -236,7 +236,12 @@ export default function Chat() {
 
       if (error) throw error;
       
-      const assistantResponse = data.response;
+      let assistantResponse = data.response;
+      
+      // If there's an image URL, add it to the response as markdown
+      if (data.image_url) {
+        assistantResponse += `\n\n![Imagem gerada](${data.image_url})`;
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

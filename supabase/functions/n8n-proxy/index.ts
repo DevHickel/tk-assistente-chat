@@ -52,11 +52,14 @@ serve(async (req) => {
 
     // Try to parse as JSON, fallback to raw text
     let assistantResponse: string;
+    let imageUrl: string | null = null;
     try {
       const jsonData = JSON.parse(rawResponse);
       console.log('N8N JSON response:', jsonData);
       // Extract the response from various possible JSON structures
       assistantResponse = jsonData.response || jsonData.message || jsonData.text || jsonData.output || JSON.stringify(jsonData);
+      // Extract image URL if present
+      imageUrl = jsonData.image_url || jsonData.imageUrl || jsonData.image || null;
     } catch (parseError) {
       console.log('N8N response is not JSON, using as text');
       assistantResponse = rawResponse;
@@ -67,9 +70,15 @@ serve(async (req) => {
     }
     
     console.log('Final assistant response:', assistantResponse.substring(0, 200));
+    if (imageUrl) {
+      console.log('Image URL included:', imageUrl);
+    }
 
     return new Response(
-      JSON.stringify({ response: assistantResponse }),
+      JSON.stringify({ 
+        response: assistantResponse,
+        image_url: imageUrl 
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

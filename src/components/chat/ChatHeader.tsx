@@ -1,4 +1,4 @@
-import { Menu, LogOut, Shield } from 'lucide-react';
+import { LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,12 +11,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
-interface ChatHeaderProps {
-  onToggleSidebar: () => void;
-}
-
-export const ChatHeader = ({ onToggleSidebar }: ChatHeaderProps) => {
+export const ChatHeader = () => {
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -24,14 +21,7 @@ export const ChatHeader = ({ onToggleSidebar }: ChatHeaderProps) => {
     <header className="border-b border-border bg-card shadow-sm">
       <div className="px-4 py-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggleSidebar}
-            className="lg:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
+          <SidebarTrigger />
           <img
             src={tkLogo}
             alt="TK Solution Logo"

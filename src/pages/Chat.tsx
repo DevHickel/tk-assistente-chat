@@ -8,6 +8,7 @@ import { ChatWelcome } from '@/components/chat/ChatWelcome';
 import { ChatMessages } from '@/components/chat/ChatMessages';
 import { ChatInput } from '@/components/ChatInput';
 import { useToast } from '@/hooks/use-toast';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface Message {
   id: string;
@@ -31,7 +32,6 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSession, setCurrentSession] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const conversationEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -221,38 +221,38 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <ChatSidebar
-        sessions={sessions}
-        currentSession={currentSession}
-        onSelectSession={setCurrentSession}
-        onNewChat={createNewSession}
-        onDeleteSession={deleteSession}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
+    <SidebarProvider>
+      <div className="flex h-screen w-full bg-background">
+        <ChatSidebar
+          sessions={sessions}
+          currentSession={currentSession}
+          onSelectSession={setCurrentSession}
+          onNewChat={createNewSession}
+          onDeleteSession={deleteSession}
+        />
 
-      <div className="flex flex-col flex-1">
-        <ChatHeader onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        <div className="flex flex-col flex-1">
+          <ChatHeader />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 py-6">
-            {messages.length === 0 ? (
-              <ChatWelcome onSuggestionClick={handleSuggestionClick} />
-            ) : (
-              <ChatMessages
-                messages={messages}
-                isLoading={isLoading}
-                conversationEndRef={conversationEndRef}
-              />
-            )}
+          <main className="flex-1 overflow-y-auto">
+            <div className="max-w-4xl mx-auto px-4 py-6">
+              {messages.length === 0 ? (
+                <ChatWelcome onSuggestionClick={handleSuggestionClick} />
+              ) : (
+                <ChatMessages
+                  messages={messages}
+                  isLoading={isLoading}
+                  conversationEndRef={conversationEndRef}
+                />
+              )}
+            </div>
+          </main>
+
+          <div className="max-w-4xl mx-auto w-full">
+            <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
           </div>
-        </main>
-
-        <div className="max-w-4xl mx-auto w-full">
-          <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

@@ -20,8 +20,8 @@ serve(async (req) => {
       );
     }
 
-    // N8N webhook endpoint (test)
-    const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook-test/TkSolution';
+    // N8N webhook endpoint (production)
+    const N8N_WEBHOOK = 'https://n8n.vetorix.com.br/webhook/TkSolution';
     
     console.log('Calling N8N webhook with message:', message);
     

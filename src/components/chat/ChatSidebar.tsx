@@ -10,6 +10,8 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 interface ChatSidebarProps {
@@ -27,15 +29,24 @@ export const ChatSidebar = ({
   onNewChat,
   onDeleteSession,
 }: ChatSidebarProps) => {
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 py-3">
-            <Button onClick={onNewChat} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Chat
-            </Button>
+          <SidebarGroupLabel className="px-2 py-3">
+            {!isCollapsed ? (
+              <Button onClick={onNewChat} className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Chat
+              </Button>
+            ) : (
+              <Button onClick={onNewChat} size="icon" className="w-full">
+                <Plus className="h-4 w-4" />
+              </Button>
+            )}
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
@@ -43,32 +54,32 @@ export const ChatSidebar = ({
               <SidebarMenu className="px-2">
                 {sessions.map((session) => (
                   <SidebarMenuItem key={session.id}>
-                    <div
+                    <SidebarMenuButton
+                      onClick={() => onSelectSession(session.id)}
+                      isActive={currentSession === session.id}
+                      tooltip={isCollapsed ? session.title : undefined}
                       className={cn(
-                        'group relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer',
-                        currentSession === session.id
-                          ? 'bg-primary text-primary-foreground'
-                          : 'hover:bg-accent text-foreground'
+                        'group relative',
+                        isCollapsed ? 'justify-center' : 'justify-start'
                       )}
                     >
-                      <button
-                        onClick={() => onSelectSession(session.id)}
-                        className="flex items-center gap-2 flex-1 min-w-0 text-left"
-                      >
-                        <MessageSquare className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{session.title}</span>
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteSession(session.id);
-                        }}
-                        className="shrink-0 p-1.5 hover:bg-destructive/20 rounded transition-colors"
-                        title="Excluir conversa"
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </button>
-                    </div>
+                      <MessageSquare className={cn('h-4 w-4', !isCollapsed && 'mr-2')} />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1 truncate">{session.title}</span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteSession(session.id);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 shrink-0 p-1 hover:bg-destructive/20 rounded transition-opacity"
+                            title="Excluir conversa"
+                          >
+                            <Trash2 className="h-3 w-3 text-destructive" />
+                          </button>
+                        </>
+                      )}
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

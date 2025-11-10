@@ -65,13 +65,20 @@ export const MessageBubble = ({ content, variant }: MessageBubbleProps) => {
                 {children}
               </a>
             ),
-            img: ({ src, alt }) => (
-              <img 
-                src={src} 
-                alt={alt || ''} 
-                className="rounded-lg max-w-full h-auto my-2"
-              />
-            ),
+            img: ({ src, alt }) => {
+              // Se a URL termina com .pdf, troca por -preview.jpg
+              const imageSrc = src?.endsWith('.pdf') 
+                ? src.replace('.pdf', '-preview.jpg')
+                : src;
+              
+              return (
+                <img 
+                  src={imageSrc} 
+                  alt={alt || ''} 
+                  className="rounded-lg max-w-full h-auto my-2"
+                />
+              );
+            },
           }}
         >
           {content}

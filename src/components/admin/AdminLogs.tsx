@@ -9,6 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -21,19 +30,27 @@ interface ActivityLog {
 
 export const AdminLogs = () => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
+  const [filteredLogs, setFilteredLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     loadLogs();
   }, []);
+
+  useEffect(() => {
+    filterLogs();
+  }, [logs, searchTerm, startDate, endDate, sortOrder]);
 
   const loadLogs = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('activity_logs')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50);
+      .order('created_at', { ascending: false });
 
     if (!error && data) {
       setLogs(data);
@@ -41,18 +58,97 @@ export const AdminLogs = () => {
     setLoading(false);
   };
 
+  const filterLogs = () => {
+    let filtered = [...logs];
+
+    // Filter by search term (name or email)
+    if (searchTerm) {
+      filtered = filtered.filter(log =>
+        log.user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.action.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by date range
+    if (startDate) {
+      filtered = filtered.filter(log => 
+        new Date(log.created_at) >= new Date(startDate)
+      );
+    }
+    if (endDate) {
+      filtered = filtered.filter(log => 
+        new Date(log.created_at) <= new Date(endDate + 'T23:59:59')
+      );
+    }
+
+    // Sort by date
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    setFilteredLogs(filtered);
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Logs de Atividade</CardTitle>
         <CardDescription>
-          Últimas 50 atividades do sistema
+          Histórico de atividades do sistema
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="space-y-2">
+            <Label htmlFor="search">Buscar</Label>
+            <Input
+              id="search"
+              placeholder="Nome ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="startDate">Data Inicial</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="endDate">Data Final</Label>
+            <Input
+              id="endDate"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="sort">Ordenar por Data</Label>
+            <Select value={sortOrder} onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}>
+              <SelectTrigger id="sort">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Mais Recente</SelectItem>
+                <SelectItem value="asc">Mais Antigo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         {loading ? (
           <p className="text-center py-4 text-muted-foreground">Carregando logs...</p>
-        ) : logs.length === 0 ? (
+        ) : filteredLogs.length === 0 ? (
           <p className="text-center py-4 text-muted-foreground">Nenhum log encontrado</p>
         ) : (
           <div className="rounded-md border">
@@ -65,7 +161,7 @@ export const AdminLogs = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {logs.map((log) => (
+                {filteredLogs.map((log) => (
                   <TableRow key={log.id}>
                     <TableCell className="font-mono text-sm">
                       {format(new Date(log.created_at), "dd/MM/yyyy 'às' HH:mm", {

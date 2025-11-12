@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Signup from "./pages/Signup";
 import Chat from "./pages/Chat";
 import Admin from "./pages/Admin";
+import AdminSettings from "./pages/AdminSettings";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/signup" element={<Signup />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/settings" element={<Settings />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

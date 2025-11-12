@@ -9,6 +9,7 @@ import { ChatMessages } from '@/components/chat/ChatMessages';
 import { ChatInput } from '@/components/ChatInput';
 import { useToast } from '@/hooks/use-toast';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { BugReportButton } from '@/components/BugReportButton';
 
 interface Message {
   id: string;
@@ -311,6 +312,8 @@ export default function Chat() {
             <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
           </div>
         </div>
+
+        <BugReportButton />
       </div>
     </SidebarProvider>
   );

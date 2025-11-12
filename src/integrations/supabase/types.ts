@@ -46,6 +46,60 @@ export type Database = {
           },
         ]
       }
+      app_settings: {
+        Row: {
+          font_family: string | null
+          id: string
+          logo_url: string | null
+          primary_color: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          font_family?: string | null
+          id?: string
+          logo_url?: string | null
+          primary_color?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          font_family?: string | null
+          id?: string
+          logo_url?: string | null
+          primary_color?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      bug_reports: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          screenshot_url: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          screenshot_url: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          screenshot_url?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
